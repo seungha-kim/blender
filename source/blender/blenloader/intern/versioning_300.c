@@ -62,8 +62,8 @@
 #include "MEM_guardedalloc.h"
 #include "readfile.h"
 
-#include "SEQ_sequencer.h"
 #include "SEQ_iterator.h"
+#include "SEQ_sequencer.h"
 
 #include "RNA_access.h"
 
@@ -635,6 +635,7 @@ static bool seq_transform_origin_set(Sequence *seq, void *UNUSED(user_data))
 {
   StripTransform *transform = seq->strip->transform;
   transform->origin[0] = transform->origin[1] = 0.0f;
+  return true;
 }
 
 /* NOLINTNEXTLINE: readability-function-size */
@@ -1104,7 +1105,7 @@ void blo_do_versions_300(FileData *fd, Library *UNUSED(lib), Main *bmain)
     /* Keep this block, even when empty. */
     LISTBASE_FOREACH (Scene *, scene, &bmain->scenes) {
       SequencerToolSettings *sequencer_tool_settings = SEQ_tool_settings_ensure(scene);
-      sequencer_tool_settings->pivot_point = V3D_AROUND_LOCAL_ORIGINS;
+      sequencer_tool_settings->pivot_point = V3D_AROUND_CENTER_MEDIAN;
 
       if (scene->ed != NULL) {
         SEQ_for_each_callback(&scene->ed->seqbase, seq_transform_origin_set, NULL);
