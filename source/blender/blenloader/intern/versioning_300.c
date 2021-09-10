@@ -635,6 +635,7 @@ static bool seq_transform_origin_set(Sequence *seq, void *UNUSED(user_data))
 {
   StripTransform *transform = seq->strip->transform;
   transform->origin[0] = transform->origin[1] = 0.5f;
+  return true;
 }
 
 /* NOLINTNEXTLINE: readability-function-size */
