@@ -681,7 +681,7 @@ static bool seq_select_point_image_isect(const Scene *scene,
 static Sequence *seq_select_seq_from_preview(const bContext *C, const int mval[2])
 {
   Scene *scene = CTX_data_scene(C);
-  Editing *ed = SEQ_editing_get(scene, false);
+  Editing *ed = SEQ_editing_get(scene);
   ListBase *seqbase = SEQ_active_seqbase_get(ed);
   SpaceSeq *sseq = CTX_wm_space_seq(C);
   View2D *v2d = UI_view2d_fromcontext(C);
