@@ -631,6 +631,12 @@ static bNodeSocket *do_version_replace_float_size_with_vector(bNodeTree *ntree,
   return new_socket;
 }
 
+static bool seq_transform_origin_set(Sequence *seq, void *UNUSED(user_data))
+{
+  StripTransform *transform = seq->strip->transform;
+  transform->origin[0] = transform->origin[1] = 0.5f;
+}
+
 /* NOLINTNEXTLINE: readability-function-size */
 void blo_do_versions_300(FileData *fd, Library *UNUSED(lib), Main *bmain)
 {
@@ -1099,6 +1105,10 @@ void blo_do_versions_300(FileData *fd, Library *UNUSED(lib), Main *bmain)
     LISTBASE_FOREACH (Scene *, scene, &bmain->scenes) {
       SequencerToolSettings *sequencer_tool_settings = SEQ_tool_settings_ensure(scene);
       sequencer_tool_settings->pivot_point = V3D_AROUND_CENTER_MEDIAN;
+
+      if (scene->ed != NULL) {
+        SEQ_for_each_callback(&scene->ed->seqbase, seq_transform_origin_set, NULL);
+      }
     }
   }
 }
