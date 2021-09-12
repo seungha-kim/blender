@@ -2050,10 +2050,14 @@ static int sequencer_draw_get_transform_preview_frame(Scene *scene)
 
 static void seq_draw_image_origin_and_outline(const bContext *C, Sequence *seq)
 {
+  SpaceSeq *sseq = CTX_wm_space_seq(C);
   if ((seq->flag & SELECT) == 0) {
     return;
   }
   if (ED_screen_animation_no_scrub(CTX_wm_manager(C))) {
+    return;
+  }
+  if ((sseq->flag & SEQ_SHOW_STRIP_OVERLAY) == 0 || (sseq->flag & SEQ_SHOW_IMAGE_OUTLINE) == 0) {
     return;
   }
 
@@ -2094,7 +2098,7 @@ static void seq_draw_image_origin_and_outline(const bContext *C, Sequence *seq)
     image_size[1] = scene->r.ysch;
   }
   else {
-    image_size[0] = strip_elem->orig_height;
+    image_size[0] = strip_elem->orig_width;
     image_size[1] = strip_elem->orig_height;
   }
 
@@ -2217,7 +2221,7 @@ void sequencer_draw_preview(const bContext *C,
     IMB_freeImBuf(ibuf);
   }
 
-  SeqCollection *collection = Seq_query_rendered_strips(&scene->ed->seqbase, timeline_frame, 0);
+  SeqCollection *collection = SEQ_query_rendered_strips(&scene->ed->seqbase, timeline_frame, 0);
   Sequence *seq;
   SEQ_ITERATOR_FOREACH (seq, collection) {
     seq_draw_image_origin_and_outline(C, seq);
