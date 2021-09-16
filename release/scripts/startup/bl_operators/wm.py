@@ -2696,9 +2696,52 @@ class WM_MT_splash_quick_setup(Menu):
 class WM_MT_splash(Menu):
     bl_label = "Splash"
 
+    def fetch_data(self):
+        import datetime
+        import requests
+
+        today = datetime.date.today()
+        day_modifier = -1 if datetime.datetime.now().hour < 6 else 0
+        time_string = f"{today.year}{today.month:02}{(today.day + day_modifier):02}0600"
+        url_temp = f"http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa?serviceKey=2ubjzMGV4Qo%2BXpgDEvturjbkViwqe8bDL41IPaWXOvgsiCcr%2Bt%2FEiSfGuR%2FYIiaAXyn2HbTFXPiO2%2BTzM8qrbg%3D%3D&pageNo=1&numOfRows=7&dataType=JSON&regId=11B10101&tmFc={time_string}"
+        url_cloud = f"http://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst?serviceKey=2ubjzMGV4Qo%2BXpgDEvturjbkViwqe8bDL41IPaWXOvgsiCcr%2Bt%2FEiSfGuR%2FYIiaAXyn2HbTFXPiO2%2BTzM8qrbg%3D%3D&pageNo=1&numOfRows=7&dataType=JSON&regId=11B00000&tmFc={time_string}"
+
+        weather_temp = requests.get(url_temp).json()["response"]["body"]["items"]["item"][0]
+        weather_cloud = requests.get(url_cloud).json()["response"]["body"]["items"]["item"][0]
+        # print(weather_temp)
+        # print(weather_cloud)
+
+        weather_data = []
+        start_date = today + datetime.timedelta(days=day_modifier)
+        for i in range(3, 11):
+            weather_data.append({
+                "min_temp": weather_temp[f"taMin{i}"],
+                "max_temp": weather_temp[f"taMax{i}"],
+                "rain": weather_cloud[f"rnSt{i}Pm"] if f"rnSt{i}Pm" in weather_cloud else weather_cloud[f"rnSt{i}"],
+                "desc": weather_cloud[f"wf{i}Pm"] if f"wf{i}Pm" in weather_cloud else weather_cloud[f"wf{i}"],
+                "weekday": (start_date + datetime.timedelta(days=i)).strftime("%a")
+            })
+        # print(weather_data)
+        self.weather_data = weather_data
+
     def draw(self, context):
+        if not hasattr(self, 'weather_data'):
+            self.fetch_data()
+
         layout = self.layout
-        # TODO
+        for item in self.weather_data:
+            layout.separator()
+            split = layout.split()
+            col0 = split.column()
+            col0.label(text=item['weekday'])
+            col1 = split.column()
+            col1.label(text=f"{item['min_temp']}°C")
+            col2 = split.column()
+            col2.label(text=f"{item['max_temp']}°C")
+            col3 = split.column()
+            col3.label(text=f"{item['rain']}%")
+            col4 = split.column()
+            col4.label(text=item['desc'])
 
 
 class WM_MT_splash_about(Menu):
