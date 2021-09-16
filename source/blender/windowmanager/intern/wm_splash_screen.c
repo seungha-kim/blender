@@ -201,19 +201,6 @@ static uiBlock *wm_block_create_splash(bContext *C, ARegion *region, void *UNUSE
   const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
   int splash_width = text_points_max * 45 * U.dpi_fac;
   CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
-  int splash_height;
-
-  /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
-   * first draw or if the image changed. */
-  ImBuf *ibuf = wm_block_splash_image(splash_width, &splash_height);
-
-  uiBut *but = uiDefButImage(
-      block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
-
-  UI_but_func_set(but, wm_block_close, block, NULL);
-
-  wm_block_splash_add_label(
-      block, BKE_blender_version_string(), splash_width, splash_height - 13.0 * U.dpi_fac);
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,

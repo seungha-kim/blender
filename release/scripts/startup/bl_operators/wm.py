@@ -2698,51 +2698,7 @@ class WM_MT_splash(Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator_context = 'EXEC_DEFAULT'
-        layout.emboss = 'PULLDOWN_MENU'
-
-        split = layout.split()
-
-        # Templates
-        col1 = split.column()
-        col1.label(text="New File")
-
-        bpy.types.TOPBAR_MT_file_new.draw_ex(col1, context, use_splash=True)
-
-        # Recent
-        col2 = split.column()
-        col2_title = col2.row()
-
-        found_recent = col2.template_recent_files()
-
-        if found_recent:
-            col2_title.label(text="Recent Files")
-        else:
-
-            # Links if no recent files
-            col2_title.label(text="Getting Started")
-
-            col2.operator("wm.url_open_preset", text="Manual", icon='URL').type = 'MANUAL'
-            col2.operator("wm.url_open_preset", text="Blender Website", icon='URL').type = 'BLENDER'
-            col2.operator("wm.url_open_preset", text="Credits", icon='URL').type = 'CREDITS'
-
-        layout.separator()
-
-        split = layout.split()
-
-        col1 = split.column()
-        sub = col1.row()
-        sub.operator_context = 'INVOKE_DEFAULT'
-        sub.operator("wm.open_mainfile", text="Open...", icon='FILE_FOLDER')
-        col1.operator("wm.recover_last_session", icon='RECOVER_LAST')
-
-        col2 = split.column()
-
-        col2.operator("wm.url_open_preset", text="Release Notes", icon='URL').type = 'RELEASE_NOTES'
-        col2.operator("wm.url_open_preset", text="Development Fund", icon='FUND').type = 'FUND'
-
-        layout.separator()
-        layout.separator()
+        # TODO
 
 
 class WM_MT_splash_about(Menu):
