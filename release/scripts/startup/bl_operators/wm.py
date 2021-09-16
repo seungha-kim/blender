@@ -2724,9 +2724,39 @@ class WM_MT_splash(Menu):
         # print(weather_data)
         self.weather_data = weather_data
 
+    def load_icons(self):
+        # icon
+        import os
+        import bpy.utils.previews
+        icons = bpy.utils.previews.new()
+        icons_dir = os.path.join(os.path.dirname(__file__), "weather")
+        icons.load("nt_clear", os.path.join(icons_dir, "nt_clear.png"), 'IMAGE')
+        icons.load("nt_cloudy", os.path.join(icons_dir, "nt_cloudy.png"), 'IMAGE')
+        icons.load("nt_rain", os.path.join(icons_dir, "nt_rain.png"), 'IMAGE')
+        icons.load("nt_sleet", os.path.join(icons_dir, "nt_sleet.png"), 'IMAGE')
+        icons.load("nt_tstorms", os.path.join(icons_dir, "nt_tstorms.png"), 'IMAGE')
+        self.icons = icons
+        # TODO: ResourceWarning: <ImagePreviewCollection id=0x13076c130[1], <super: <class 'ImagePreviewCollection'>, <ImagePreviewCollection object>>>: left open, remove with 'bpy.utils.previews.remove()'
+
+    icon_map = {
+        "맑음": "nt_clear",
+        "구름많음": "nt_cloudy",
+        "구름많고 비": "nt_rain",
+        "구름많고 눈": "nt_sleet",
+        "구름많고 비/눈": "nt_sleet",
+        "구름많고 소나기": "nt_tstorms",
+        "흐림": "nt_cloudy",
+        "흐리고 비": "nt_rain",
+        "흐리고 눈": "nt_sleet",
+        "흐리고 비/눈": "nt_sleet",
+        "흐리고 소나기": "nt_tstorms",
+    }
+
     def draw(self, context):
         if not hasattr(self, 'weather_data'):
             self.fetch_data()
+        if not hasattr(self, 'icons'):
+            self.load_icons()
 
         layout = self.layout
         for item in self.weather_data:
@@ -2742,6 +2772,8 @@ class WM_MT_splash(Menu):
             col3.label(text=f"{item['rain']}%")
             col4 = split.column()
             col4.label(text=item['desc'])
+            col5 = split.column()
+            col5.label(icon_value=self.icons[self.icon_map.get(item["desc"], "맑음")].icon_id)
 
 
 class WM_MT_splash_about(Menu):
